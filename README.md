@@ -64,6 +64,13 @@ from fastembed_vectorstore import FastembedVectorstore, FastembedEmbeddingModel
 model = FastembedEmbeddingModel.BGESmallENV15
 vectorstore = FastembedVectorstore(model)
 
+# Optionally, customize initialization
+# vectorstore = FastembedVectorstore(
+#     model,
+#     show_download_progress=False,           # default: True
+#     cache_directory="./fastembed",          # default: ./fastembed
+# )
+
 # Add documents
 documents = [
     "The quick brown fox jumps over the lazy dog",
@@ -108,8 +115,16 @@ Enum containing all supported embedding models. Choose based on your use case:
 
 #### Constructor
 ```python
-vectorstore = FastembedVectorstore(model: FastembedEmbeddingModel)
+vectorstore = FastembedVectorstore(
+    model: FastembedEmbeddingModel,
+    show_download_progress: bool | None = ...,
+    cache_directory: str | os.PathLike[str] | None = ...,
+)
 ```
+Args:
+- `model`: Embedding model to use.
+- `show_download_progress`: Whether to show model download progress. Defaults to True.
+- `cache_directory`: Directory to cache/download model files. Defaults to `./fastembed`.
 
 #### Methods
 

@@ -5,16 +5,23 @@ use pyo3::types::PyType;
 use std::collections::HashMap;
 use std::fs::{self, File};
 use std::io::Write;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use std::thread::{self, JoinHandle};
 
 use crate::embedding_model::FastembedEmbeddingModel;
 
-fn get_text_embedder(model: EmbeddingModel) -> Option<TextEmbedding> {
-    if let Ok(embedder) =
-        TextEmbedding::try_new(InitOptions::new(model).with_show_download_progress(true))
-    {
+fn get_text_embedder(
+    model: EmbeddingModel,
+    show_download_progress: Option<bool>,
+    cache_directory: Option<PathBuf>,
+) -> Option<TextEmbedding> {
+    let mut init_options = InitOptions::new(model);
+    init_options = init_options.with_show_download_progress(show_download_progress.unwrap_or(true));
+    let cd = cache_directory.unwrap_or_else(|| PathBuf::from("fastembed_cache"));
+    init_options = init_options.with_cache_dir(cd);
+
+    if let Ok(embedder) = TextEmbedding::try_new(init_options) {
         Some(embedder)
     } else {
         None
@@ -46,9 +53,17 @@ pub struct FastembedVectorstore {
 #[pymethods]
 impl FastembedVectorstore {
     #[new]
-    fn new(model: &FastembedEmbeddingModel) -> PyResult<Self> {
-        let embedder = get_text_embedder(model.to_embedding_model())
-            .expect("Could not initialize TextEmbedding Model");
+    fn new(
+        model: &FastembedEmbeddingModel,
+        show_download_progress: Option<bool>,
+        cache_directory: Option<PathBuf>,
+    ) -> PyResult<Self> {
+        let embedder = get_text_embedder(
+            model.to_embedding_model(),
+            show_download_progress,
+            cache_directory,
+        )
+        .expect("Could not initialize TextEmbedding Model");
 
         Ok(FastembedVectorstore {
             embedder: embedder,
@@ -68,7 +83,7 @@ impl FastembedVectorstore {
             let parsed_json: HashMap<String, Vec<f32>> =
                 serde_json::from_str(&json_string).expect("Failed to parse JSON");
 
-            let embedder = get_text_embedder(model.to_embedding_model())
+            let embedder = get_text_embedder(model.to_embedding_model(), None, None)
                 .expect("Could not initialize TextEmbedding Model");
 
             return Ok(FastembedVectorstore {
@@ -109,7 +124,10 @@ impl FastembedVectorstore {
         }
         let mut similarities = Vec::<(usize, f32)>::new();
         let available_threads = std::cmp::max(1, num_cpus::get());
-        let chunk_size = std::cmp::max(1, (documents_length + available_threads - 1) / available_threads);
+        let chunk_size = std::cmp::max(
+            1,
+            (documents_length + available_threads - 1) / available_threads,
+        );
         let mut index: usize = 0;
         let mut thread_handles = Vec::<JoinHandle<_>>::new();
 

@@ -1,4 +1,5 @@
-from typing import List, Tuple
+from typing import List, Tuple, Optional, Union
+import os
 from enum import Enum
 
 class FastembedEmbeddingModel(Enum):
@@ -37,12 +38,19 @@ class FastembedEmbeddingModel(Enum):
 class FastembedVectorstore:
     """A Rust-based in-memory vector store with fastembed integration."""
     
-    def __init__(self, model: FastembedEmbeddingModel) -> None:
+    def __init__(
+        self,
+        model: FastembedEmbeddingModel,
+        show_download_progress: Optional[bool] = ...,
+        cache_directory: Union[str, os.PathLike[str], None] = ...,
+    ) -> None:
         """
         Initialize a new vector store with the specified embedding model.
         
         Args:
             model: The embedding model to use for generating embeddings
+            show_download_progress: Whether to show model download progress (default: True)
+            cache_directory: Directory to cache model files (default: fastembed_cache)
         """
         ...
     
