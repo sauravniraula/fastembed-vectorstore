@@ -35,7 +35,6 @@ The library supports a wide variety of embedding models:
 - Python 3.8 or higher
 - Rust toolchain (to build from source)
 
-
 ### Install from PyPI
 
 ```bash
@@ -45,12 +44,14 @@ pip install fastembed-vectorstore
 ### From Source
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/sauravniraula/fastembed_vectorstore.git
 cd fastembed_vectorstore
 ```
 
 2. Install the package:
+
 ```bash
 maturin develop
 ```
@@ -64,11 +65,11 @@ from fastembed_vectorstore import FastembedVectorstore, FastembedEmbeddingModel
 model = FastembedEmbeddingModel.BGESmallENV15
 vectorstore = FastembedVectorstore(model)
 
-# Optionally, customize initialization
+# Optional Configurations
 # vectorstore = FastembedVectorstore(
 #     model,
 #     show_download_progress=False,           # default: True
-#     cache_directory="./fastembed",          # default: ./fastembed
+#     cache_directory="fastembed_cache",      # default: fastembed_cache
 # )
 
 # Add documents
@@ -114,6 +115,7 @@ Enum containing all supported embedding models. Choose based on your use case:
 ### FastembedVectorstore
 
 #### Constructor
+
 ```python
 vectorstore = FastembedVectorstore(
     model: FastembedEmbeddingModel,
@@ -121,7 +123,9 @@ vectorstore = FastembedVectorstore(
     cache_directory: str | os.PathLike[str] | None = ...,
 )
 ```
+
 Args:
+
 - `model`: Embedding model to use.
 - `show_download_progress`: Whether to show model download progress. Defaults to True.
 - `cache_directory`: Directory to cache/download model files. Defaults to `./fastembed`.
@@ -129,15 +133,19 @@ Args:
 #### Methods
 
 ##### `embed_documents(documents: List[str]) -> bool`
+
 Embeds a list of documents and stores them in the vector store.
 
 ##### `search(query: str, n: int) -> List[Tuple[str, float]]`
+
 Searches for the most similar documents to the query. Returns a list of tuples containing (document, similarity_score).
 
 ##### `save(path: str) -> bool`
+
 Saves the vector store to a JSON file.
 
 ##### `load(model: FastembedEmbeddingModel, path: str) -> FastembedVectorstore`
+
 Loads a vector store from a JSON file.
 
 ## Performance Considerations
@@ -171,4 +179,4 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](https:
 
 - Built with [FastEmbed](https://github.com/Anush008/fastembed-rs) for efficient text embeddings
 - Uses [PyO3](https://github.com/PyO3/pyo3) for Python-Rust bindings
-- Inspired by the need for fast, lightweight vector storage solutions 
+- Inspired by the need for fast, lightweight vector storage solutions
