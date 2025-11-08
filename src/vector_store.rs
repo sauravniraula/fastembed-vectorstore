@@ -53,6 +53,7 @@ pub struct FastembedVectorstore {
 #[pymethods]
 impl FastembedVectorstore {
     #[new]
+    #[pyo3(signature = (model, show_download_progress=None, cache_directory=None))]
     fn new(
         model: &FastembedEmbeddingModel,
         show_download_progress: Option<bool>,
@@ -72,10 +73,13 @@ impl FastembedVectorstore {
     }
 
     #[classmethod]
+    #[pyo3(signature = (model, path, show_download_progress=None, cache_directory=None))]
     fn load(
         _: &Bound<'_, PyType>,
         model: &FastembedEmbeddingModel,
         path: String,
+        show_download_progress: Option<bool>,
+        cache_directory: Option<PathBuf>,
     ) -> PyResult<FastembedVectorstore> {
         let file_exists = fs::exists(&path).expect("Could not check if file exists");
         if file_exists {
@@ -83,8 +87,12 @@ impl FastembedVectorstore {
             let parsed_json: HashMap<String, Vec<f32>> =
                 serde_json::from_str(&json_string).expect("Failed to parse JSON");
 
-            let embedder = get_text_embedder(model.to_embedding_model(), None, None)
-                .expect("Could not initialize TextEmbedding Model");
+            let embedder = get_text_embedder(
+                model.to_embedding_model(),
+                show_download_progress,
+                cache_directory,
+            )
+            .expect("Could not initialize TextEmbedding Model");
 
             return Ok(FastembedVectorstore {
                 embedder: embedder,

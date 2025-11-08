@@ -99,6 +99,15 @@ vectorstore.save("my_vectorstore.json")
 
 # Load the vector store later
 loaded_vectorstore = FastembedVectorstore.load(model, "my_vectorstore.json")
+
+# Optional Configurations
+# vectorstore = FastembedVectorstore.load(
+#     model,
+#     "my_vectorstore.json",
+#     show_download_progress=False,           # default: True
+#     cache_directory="fastembed_cache",      # default: fastembed_cache
+# )
+# loaded_vectorstore = FastembedVectorstore.load(model, "my_vectorstore.json")
 ```
 
 ## API Reference
