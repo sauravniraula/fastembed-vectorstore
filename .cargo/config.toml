@@ -1,0 +1,10 @@
+[target.aarch64-unknown-linux-gnu]
+# Avoid relying on GCC's out-of-line atomics on aarch64 (which generate
+# references to symbols like `__aarch64_cas8_sync` that may not be available
+# or linked on all target systems, e.g. Amazon Linux 2023).
+# Disabling `outline-atomics` makes Rust emit inline atomics instead,
+# removing the dependency on those external symbols and fixing
+# runtime ImportErrors when loading the extension module.
+rustflags = ["-Ctarget-feature=-outline-atomics"]
+
+
