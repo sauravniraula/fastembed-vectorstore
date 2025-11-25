@@ -42,6 +42,14 @@ jobs:
         if: ${{ matrix.platform.target == 'aarch64' }}
         uses: PyO3/maturin-action@v1
         env:
+          # Build for an ARMv8.0 (armv8-a) baseline so wheels run on Graviton (and other v8.0-only CPUs).
+          # NOTE: This is a pure-Rust crate; Rust codegen is controlled via RUSTFLAGS, not CFLAGS.
+          #
+          # -C target-cpu=generic on aarch64 maps to an armv8-a baseline without v8.1+ features
+          # such as LSE atomics (__aarch64_cas) or BTI/PAC, avoiding crashes on v8.0-only systems.
+          CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_RUSTFLAGS: -C target-cpu=generic
+          # Keep CFLAGS/TARGET_CFLAGS in case of future C/C++ dependencies,
+          # but they currently have no effect for this crate.
           CFLAGS_aarch64_unknown_linux_gnu: -D__ARM_ARCH=8
           TARGET_CFLAGS: -D__ARM_ARCH=8
         with:
@@ -85,9 +93,10 @@ jobs:
     strategy:
       matrix:
         platform:
-          - runner: macos-13
+          # macOS 13 runners are deprecated; use macOS 15 images instead.
+          - runner: macos-15-intel
             target: x86_64
-          - runner: macos-14
+          - runner: macos-latest
             target: aarch64
     steps:
       - uses: actions/checkout@v4
