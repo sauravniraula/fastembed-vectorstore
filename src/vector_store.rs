@@ -54,7 +54,7 @@ pub struct FastembedVectorstore {
 impl FastembedVectorstore {
     #[new]
     #[pyo3(signature = (model, show_download_progress=None, cache_directory=None))]
-    fn new(
+    pub fn new(
         model: &FastembedEmbeddingModel,
         show_download_progress: Option<bool>,
         cache_directory: Option<PathBuf>,
@@ -74,7 +74,7 @@ impl FastembedVectorstore {
 
     #[classmethod]
     #[pyo3(signature = (model, path, show_download_progress=None, cache_directory=None))]
-    fn load(
+    pub fn load(
         _: &Bound<'_, PyType>,
         model: &FastembedEmbeddingModel,
         path: String,
@@ -103,7 +103,7 @@ impl FastembedVectorstore {
         }
     }
 
-    fn embed_documents(&mut self, mut documents: Vec<String>) -> PyResult<bool> {
+    pub fn embed_documents(&mut self, mut documents: Vec<String>) -> PyResult<bool> {
         if let Ok(mut vec_embeddings) = self.embedder.embed(documents.clone(), None) {
             loop {
                 if documents.is_empty() {
@@ -119,7 +119,7 @@ impl FastembedVectorstore {
         Ok(true)
     }
 
-    fn search(&self, query: &str, n: usize) -> PyResult<Vec<(String, f32)>> {
+    pub fn search(&mut self, query: &str, n: usize) -> PyResult<Vec<(String, f32)>> {
         let query_embeddings = Arc::new(
             self.embedder
                 .embed(vec![query.to_string()], None)
@@ -183,7 +183,7 @@ impl FastembedVectorstore {
         Ok(result)
     }
 
-    fn save(&self, path: &str) -> PyResult<bool> {
+    pub fn save(&self, path: &str) -> PyResult<bool> {
         if let Ok(serialized_json) = serde_json::to_string_pretty(&self.embeddings) {
             if let Some(parent) = Path::new(path).parent() {
                 if let Err(e) = fs::create_dir_all(parent) {
