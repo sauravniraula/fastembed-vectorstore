@@ -1,15 +1,20 @@
 [package]
-name = "fastembed_vectorstore"
-version = "0.1.0"
+name = "fastembed-vectorstore"
+version = "0.3.7"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [lib]
 name = "fastembed_vectorstore"
 crate-type = ["cdylib"]
 
+[dependencies.pyo3]
+version = "0.27.0"
+features = ["abi3-py38"]
+
 [dependencies]
-fastembed = { version = "4.9.1", default-features = false, features = ["hf-hub", "ort-download-binaries"] }
-pyo3 = "0.25.0"
+fastembed = { version = "5.3.0", default-features = false, features = [
+  "hf-hub",
+  "ort-download-binaries",
+] }
 serde_json = "1.0.140"
 num_cpus = "1.16.0"
