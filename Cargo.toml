@@ -1,6 +1,6 @@
 [package]
 name = "fastembed-vectorstore"
-version = "0.3.9"
+version = "0.4.1"
 edition = "2021"
 
 [lib]
@@ -18,3 +18,4 @@ fastembed = { version = "5.3.0", default-features = false, features = [
 ] }
 serde_json = "1.0.140"
 num_cpus = "1.16.0"
+openssl = { version = "0.10", features = ["vendored"] }

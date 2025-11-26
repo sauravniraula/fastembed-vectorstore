@@ -30,72 +30,75 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: 3.x
+
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
           target: ${{ matrix.platform.target }}
-          args: --release --out dist
-          sccache: ${{ !startsWith(github.ref, 'refs/tags/') }}
+          # "zig" is highly recommended for cross-compiling to Linux ARM64
+          # It handles glibc versioning automatically for manylinux compatibility
+          zig: ${{ matrix.platform.target == 'aarch64' }}
           manylinux: auto
+          # Add openssl/vendored feature to fix OpenSSL linking
+          args: --release --out dist --features openssl/vendored
+          sccache: ${{ !startsWith(github.ref, 'refs/tags/') }}
+          # We do NOT need to install apt packages for the host
+          # because we are using 'vendored' openssl and zig/cross.
           before-script-linux: |
             if [ "${{ matrix.platform.target }}" = "x86_64" ]; then
-                echo "Running on manylinux2014_x86_64 (yum)"
-                yum -y install openssl-devel
+                yum -y install openssl-devel perl-IPC-Cmd
             else
-                echo "Running on manylinux2014_aarch64 cross image (apt)"
                 apt update
-                apt install -y \
-                  clang llvm \
-                  gcc-aarch64-linux-gnu \
-                  libc6-dev-arm64-cross \
-                  libssl-dev \
-                  pkg-config \
-                  libatomic1-arm64-cross
-                
-                export SYSROOT=/usr/aarch64-linux-gnu
-                echo "Using clang sysroot: $SYSROOT"
-                export CC_aarch64_unknown_linux_gnu="clang --target=aarch64-unknown-linux-gnu --sysroot=$SYSROOT"
-                export AR_aarch64_unknown_linux_gnu="llvm-ar"
-                export CFLAGS_aarch64_unknown_linux_gnu="-march=armv8-a --sysroot=$SYSROOT"
-                export CXXFLAGS_aarch64_unknown_linux_gnu="--sysroot=$SYSROOT"
-                
-                # CRITICAL: Enable outline-atomics for Graviton compatibility
-                export RUSTFLAGS="-Ctarget-feature=+outline-atomics"
+                apt install -y libssl-dev pkg-config perl
             fi
+        env:
+          # 1. RUST FIX: Disable outline atomics in Rust code
+          CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_RUSTFLAGS: "-Ctarget-feature=-outline-atomics"
+
+          # 2. C FIX (Ring/OpenSSL):
+          # -D__ARM_ARCH=8 fixes Ring assembly.
+          # -mno-outline-atomics prevents GCC from generating the missing symbol in C code.
+          CFLAGS_aarch64_unknown_linux_gnu: "-D__ARM_ARCH=8 -mno-outline-atomics"
+
+          # 3. C++ FIX (ONNX Runtime):
+          # This is the critical one for 'ort'. It prevents the C++ compiler
+          # from linking against __aarch64_cas8_sync.
+          CXXFLAGS_aarch64_unknown_linux_gnu: "-mno-outline-atomics"
 
       - name: Build free-threaded wheels
         uses: PyO3/maturin-action@v1
         with:
           target: ${{ matrix.platform.target }}
-          args: --release --out dist -i python3.13t
-          sccache: ${{ !startsWith(github.ref, 'refs/tags/') }}
+          # "zig" is highly recommended for cross-compiling to Linux ARM64
+          # It handles glibc versioning automatically for manylinux compatibility
+          zig: ${{ matrix.platform.target == 'aarch64' }}
           manylinux: auto
+          # Add openssl/vendored feature to fix OpenSSL linking
+          args: --release --out dist --features openssl/vendored
+          sccache: ${{ !startsWith(github.ref, 'refs/tags/') }}
+          # We do NOT need to install apt packages for the host
+          # because we are using 'vendored' openssl and zig/cross.
           before-script-linux: |
             if [ "${{ matrix.platform.target }}" = "x86_64" ]; then
-                echo "Running on manylinux2014_x86_64 (yum)"
-                yum -y install openssl-devel
+                yum -y install openssl-devel perl-IPC-Cmd
             else
-                echo "Running on manylinux2014_aarch64 cross image (apt)"
                 apt update
-                apt install -y \
-                  clang llvm \
-                  gcc-aarch64-linux-gnu \
-                  libc6-dev-arm64-cross \
-                  libssl-dev \
-                  pkg-config \
-                  libatomic1-arm64-cross
-                
-                export SYSROOT=/usr/aarch64-linux-gnu
-                echo "Using clang sysroot: $SYSROOT"
-                export CC_aarch64_unknown_linux_gnu="clang --target=aarch64-unknown-linux-gnu --sysroot=$SYSROOT"
-                export AR_aarch64_unknown_linux_gnu="llvm-ar"
-                export CFLAGS_aarch64_unknown_linux_gnu="-march=armv8-a --sysroot=$SYSROOT"
-                export CXXFLAGS_aarch64_unknown_linux_gnu="--sysroot=$SYSROOT"
-                
-                # CRITICAL: Enable outline-atomics for Graviton compatibility
-                export RUSTFLAGS="-Ctarget-feature=+outline-atomics"
+                apt install -y libssl-dev pkg-config perl
             fi
-          
+        env:
+          # 1. RUST FIX: Disable outline atomics in Rust code
+          CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_RUSTFLAGS: "-Ctarget-feature=-outline-atomics"
+
+          # 2. C FIX (Ring/OpenSSL):
+          # -D__ARM_ARCH=8 fixes Ring assembly.
+          # -mno-outline-atomics prevents GCC from generating the missing symbol in C code.
+          CFLAGS_aarch64_unknown_linux_gnu: "-D__ARM_ARCH=8 -mno-outline-atomics"
+
+          # 3. C++ FIX (ONNX Runtime):
+          # This is the critical one for 'ort'. It prevents the C++ compiler
+          # from linking against __aarch64_cas8_sync.
+          CXXFLAGS_aarch64_unknown_linux_gnu: "-mno-outline-atomics"
+
       - name: Upload wheels
         uses: actions/upload-artifact@v4
         with:
