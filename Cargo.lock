@@ -572,7 +572,7 @@ dependencies = [
 
 [[package]]
 name = "fastembed-vectorstore"
-version = "0.3.7"
+version = "0.3.9"
 dependencies = [
  "fastembed",
  "num_cpus",
