@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "fastembed_vectorstore"
-version = "0.3.7"
+version = "0.3.8"
 description = "A Rust-based in-memory vector store with fastembed"
 authors = [{ name = "sauravniraula", email = "developmentsaurav@gmail.com" }]
 readme = "README.md"

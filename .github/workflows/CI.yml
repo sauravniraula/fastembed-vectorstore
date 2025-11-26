@@ -57,7 +57,7 @@ jobs:
                 export AR_aarch64_unknown_linux_gnu="llvm-ar"
                 export CFLAGS_aarch64_unknown_linux_gnu="-march=armv8-a --sysroot=$SYSROOT"
                 export CXXFLAGS_aarch64_unknown_linux_gnu="--sysroot=$SYSROOT"
-                export RUSTFLAGS="-C target-cpu=cortex-a53 -C link-args='-latomic'"
+                export RUSTFLAGS="-C target-cpu=cortex-a53"
             fi
       - name: Build free-threaded wheels
         uses: PyO3/maturin-action@v1
@@ -86,7 +86,7 @@ jobs:
                 export AR_aarch64_unknown_linux_gnu="llvm-ar"
                 export CFLAGS_aarch64_unknown_linux_gnu="-march=armv8-a --sysroot=$SYSROOT"
                 export CXXFLAGS_aarch64_unknown_linux_gnu="--sysroot=$SYSROOT"
-                export RUSTFLAGS="-C target-cpu=cortex-a53 -C link-args='-latomic'"
+                export RUSTFLAGS="-C target-cpu=cortex-a53"
             fi
       - name: Upload wheels
         uses: actions/upload-artifact@v4
