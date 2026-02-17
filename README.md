@@ -2,20 +2,8 @@
 
 [![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?style=flat-square&logo=github)](https://github.com/sauravniraula/fastembed_vectorstore)
 
-A high-performance, Rust-based in-memory vector store with FastEmbed integration for Python applications.
+A high-performance, in-memory vector store with FastEmbed integration for Python applications.
 
-## Overview
-
-FastEmbed VectorStore is a lightweight, fast vector database that leverages the power of Rust and the [FastEmbed library](https://github.com/Anush008/fastembed-rs) to provide efficient text embedding and similarity search capabilities. It's designed for applications that need quick semantic search without the overhead of external database systems.
-
-## Features
-
-- 🚀 **High Performance**: Built in Rust with Python bindings for optimal speed
-- 🧠 **Multiple Embedding Models**: Support for 30+ pre-trained embedding models including BGE, Nomic, GTE, and more
-- 💾 **In-Memory Storage**: Fast in-memory vector storage with persistence capabilities
-- 🔍 **Similarity Search**: Cosine similarity-based search with customizable result limits
-- 💾 **Save/Load**: Persist and restore vector stores to/from JSON files
-- 🐍 **Python Integration**: Seamless Python API with PyO3 bindings
 
 ## Supported Embedding Models
 
@@ -33,7 +21,6 @@ The library supports a wide variety of embedding models:
 ### Prerequisites
 
 - Python 3.8 or higher
-- Rust toolchain (to build from source)
 
 ### Install from PyPI
 
@@ -53,7 +40,7 @@ cd fastembed_vectorstore
 2. Install the package:
 
 ```bash
-maturin develop
+pip install -e .
 ```
 
 ## Quick Start
@@ -185,6 +172,4 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](https:
 
 ## Acknowledgments
 
-- Built with [FastEmbed](https://github.com/Anush008/fastembed-rs) for efficient text embeddings
-- Uses [PyO3](https://github.com/PyO3/pyo3) for Python-Rust bindings
-- Inspired by the need for fast, lightweight vector storage solutions
+- Built with [FastEmbed](https://github.com/qdrant/fastembed) for efficient text embeddings

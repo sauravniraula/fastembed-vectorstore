@@ -1,18 +1,19 @@
 [build-system]
-requires = ["maturin>=1.0,<2.0"]
-build-backend = "maturin"
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "fastembed_vectorstore"
 version = "0.5.1"
-description = "A Rust-based in-memory vector store with fastembed"
+description = "In-memory vector store with fastembed"
 authors = [{ name = "sauravniraula", email = "developmentsaurav@gmail.com" }]
 readme = "README.md"
 license = "Apache-2.0"
-keywords = ["fastembed", "vectorstore", "python", "rust"]
+keywords = ["fastembed", "vectorstore", "python", "embedding", "vector database", "similarity search"]
 requires-python = ">=3.8"
+dependencies = ["fastembed", "numpy"]
 classifiers = [
-    "Programming Language :: Rust",
+    "Programming Language :: Python :: 3",
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
@@ -21,5 +22,9 @@ classifiers = [
 Repository = "https://github.com/sauravniraula/fastembed_vectorstore"
 Issues = "https://github.com/sauravniraula/fastembed_vectorstore/issues"
 
-[tool.maturin]
-include = ["fastembed_vectorstore.pyi"]
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["fastembed_vectorstore*"]
+
+[tool.setuptools.package-data]
+fastembed_vectorstore = ["py.typed"]
