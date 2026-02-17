@@ -3,8 +3,8 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "fastembed_vectorstore"
-version = "0.5.1"
+name = "fastembed-vectorstore"
+version = "0.5.2"
 description = "In-memory vector store with fastembed"
 authors = [{ name = "sauravniraula", email = "developmentsaurav@gmail.com" }]
 readme = "README.md"
